@@ -1,114 +1,95 @@
-# pro_venv — Project Scaffold
+# server_control
 
-![Build](https://github.com/TamerOnLine/pro_venv/actions/workflows/test-pro_venv.yml/badge.svg)
-![Release](https://img.shields.io/github/v/release/TamerOnLine/pro_venv?style=flat-square)
-![License](https://img.shields.io/github/license/TamerOnLine/pro_venv?style=flat-square)
+`server_control` is a lightweight **server monitoring and control tool** built in Python.  
+It lets you connect to any remote Linux server (via SSH) and launch a live monitoring dashboard powered by `tmux`.
 
-A one‑shot Python project scaffold. It prepares the virtual environment, installs requirements, generates launch files, and configures VS Code — all from **the project root**.
+## 🔹 What it does
+
+- 📜 Stream **cloud-init logs** (`/var/log/cloud-init-output.log`)  
+- 📝 Follow **system/service logs** (e.g., `journalctl -fu peertube`)  
+- 📊 View **CPU, memory, and process usage** with `htop`  
+- 🔄 Auto-fix SSH host key issues (`fix_known_hosts.py`)  
+
+This project starts as a monitoring tool but is designed to expand into **full server management**: service control, updates, firewall, database management, and more.
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Features
 
-> Run all commands from **the project root**.
+- One-command setup (`tmux` + `htop` installation if missing)
+- Multi-pane `tmux` monitoring:
+  - Top → cloud-init logs  
+  - Bottom-left → journalctl logs  
+  - Bottom-right → htop  
+- Works with any Linux server (tested on Ubuntu 22.04/24.04)  
+- Self-healing SSH connections (host key reset automation)
+
+---
+
+## ⚙️ Installation
+
+Clone the repository:
 
 ```bash
-# first-time setup
-python pro_venv.py
-
-# run your app later
-python main.py
+git clone https://github.com/TamerOnLine/server_control.git
+cd server_control
 ```
 
-> You don’t need to activate `venv` manually — `main.py` re-executes inside your environment automatically.
-
----
-
-## ✨ What does the script do?
-
-- Creates or reads `setup-config.json` (project settings).
-- Creates `venv/` and upgrades `pip`.
-- Installs packages from `requirements.txt` (creates it if missing).
-- Generates:
-  - `main.py` (a safe launcher that re-executes inside venv, then runs your file).
-  - `app.py` (a simple starter entry point you can replace).
-  - `.vscode/settings.json`, `.vscode/launch.json`, and `project.code-workspace`.
-  - `env-info.txt` (Python version + list of installed packages).
-- (Optional) Generates a GitHub Actions workflow when using `--ci`.
-
----
-
-## 🗂️ Files & Expected Structure
-
-```
-.
-├── pro_venv.py
-├── setup-config.json
-├── requirements.txt
-├── main.py
-├── app.py
-├── env-info.txt
-├── venv/
-└── .vscode/
-    ├── settings.json
-    └── launch.json
-```
-
----
-
-## ⚙️ Configuration: `setup-config.json`
-
-Default values created by the script:
-
-```json
-{
-  "project_name": "<folder-name>",
-  "main_file": "app.py",
-  "entry_point": "main.py",
-  "requirements_file": "requirements.txt",
-  "venv_dir": "venv",
-  "python_version": "3.12"
-}
-```
-
-You can edit these after generation (e.g., change the main file or the venv folder name).
-
----
-
-## 🧪 GitHub Actions Integration (Optional)
-
-To create a simple test workflow:
+(Optional) create a virtual environment:
 
 ```bash
-python pro_venv.py --ci create
+python -m venv .venv
+source .venv/bin/activate   # Linux/macOS
+.venv\Scripts\activate      # Windows PowerShell
 ```
 
-This generates: `.github/workflows/test-pro_venv.yml`.
+Install dependencies:
 
-> Use `--ci force` to overwrite if the file already exists, and `--ci-python` to choose the Python version.
-
----
-
-## ❓ FAQ
-
-**Do I need to activate the environment manually?**  
-No. `main.py` re-executes inside the environment, then runs `app.py`.
-
-**Where should I run the script from?**  
-From the **project root**. If you enable the safety check at the end of the file, it blocks running from outside the root with a clear message.
-
-**Where are VS Code settings saved?**  
-Inside `.vscode/` in the project. It’s recommended to ignore these in Git because they’re local settings.
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-## 🧰 Requirements
+## 📡 Usage
 
-- Python 3.12 (or as configured in `setup-config.json`).
-- Permission to create folders/files in the project root.
+### Fix SSH host key (if IP changed):
+
+```bash
+python -m fix_known_hosts --host <IP> --user root
+```
+
+### Start monitoring session:
+
+```bash
+python monitor.py --host <IP> --user root --install
+```
+
+**Arguments:**
+- `--host` → server IP or domain  
+- `--user` → SSH username (default: root)  
+- `--install` → auto-install `tmux` + `htop` on the server  
+
+**Example:**
+```bash
+python monitor.py --host 159.69.122.193 --user root --install
+```
 
 ---
 
-## 📝 License
+## 🛠 Roadmap
 
-MIT — see `LICENSE`.
+- [x] Basic monitoring with tmux  
+- [x] SSH host key auto-fix  
+- [ ] Service management (start/stop/restart)  
+- [ ] Firewall management (ufw/iptables)  
+- [ ] Database management (Postgres/MySQL)  
+- [ ] File transfer integration (scp/rsync)  
+- [ ] Web UI dashboard (Flask/FastAPI + React/Vue)  
+- [ ] Multi-server monitoring  
+
+---
+
+## 📄 License
+
+[MIT](LICENSE) © 2025 [TamerOnLine](https://github.com/TamerOnLine)  
